@@ -19,7 +19,7 @@ def treat_file(comment_method, file_name):
     chunk_nb = 0
     comment_count = 0
     with open(file_name, 'rb') as fh:
-        dctx = zstd.ZstdDecompressor()
+        dctx = zstd.ZstdDecompressor(max_window_size = 2**31)
         with dctx.stream_reader(fh) as reader:
             previous_line = ""
             with tqdm(total = os.path.getsize(file_name), mininterval = 0.5, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
