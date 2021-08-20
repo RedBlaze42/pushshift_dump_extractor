@@ -11,9 +11,13 @@ def treat_files(comment_method, slug):
 def human_size(bytes, units=[' bytes','KB','MB','GB','TB', 'PB', 'EB']):
     return str(bytes) + units[0] if bytes < 1024 else human_size(bytes>>10, units[1:])
 
+def human_b10(bytes, units=['','K','M','G','T', 'P', 'E']):
+    return "{:.2f}{}".format(float(bytes), units[0]) if bytes < 1000 else human_b10(bytes / 1000, units[1:])
+
 def treat_file(comment_method, file_name):
     last_update = 0
     chunk_nb = 0
+    comment_count = 0
     with open(file_name, 'rb') as fh:
         dctx = zstd.ZstdDecompressor()
         with dctx.stream_reader(fh) as reader:
@@ -25,6 +29,7 @@ def treat_file(comment_method, file_name):
 
                     update = int(fh.tell())
                     pbar.update(update - last_update)
+                    pbar.set_postfix({"count":human_b10(comment_count),"size":human_size(chunk_nb*(2**24))})
                     last_update = update
                     
                     if not chunk:
@@ -39,6 +44,7 @@ def treat_file(comment_method, file_name):
                         comment = json.loads(line)
                         
                         comment_method(comment)
+                        comment_count += 1
                         
                     previous_line = lines[-1]
     print("Finished treating {}".format(human_size(chunk_nb*(2**24))))
