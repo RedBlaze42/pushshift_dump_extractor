@@ -18,6 +18,7 @@ def treat_comment(comment):
     else:
         sub_id = subs_ids[comment["subreddit"]]
 
+    if comment["author"] == "[deleted]": return
     if sub_id not in subs.keys(): subs[sub_id] = 1
     subs[sub_id] += 1
     
