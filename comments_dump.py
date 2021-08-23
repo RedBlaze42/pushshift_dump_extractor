@@ -18,11 +18,10 @@ def treat_comment(comment):
     else:
         sub_id = subs_ids[comment["subreddit"]]
 
-    if comment["author"] == "[deleted]": return
     if sub_id not in subs.keys(): subs[sub_id] = 1
     subs[sub_id] += 1
     
-    authors.add_post(comment["author"], sub_id)
+    authors.add_post(comment["author_fullname"], comment["author"], sub_id)
 
 if __name__ == "__main__":
     
@@ -32,7 +31,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Arrêt...")
 
-    authors.close()
 
     with open("output/subreddits.json","w") as f:
         json.dump(subs, f)
@@ -42,3 +40,4 @@ if __name__ == "__main__":
 
     with open("output/dump_infos.json","w") as f:
         json.dump({"element_number": len(authors)}, f)
+    authors.close()
