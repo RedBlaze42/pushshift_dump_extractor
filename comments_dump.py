@@ -1,15 +1,18 @@
 from treat_dump_file import treat_file, treat_files
 import json, ndjson, os
+from guppy import hpy
+import time
 
 if __name__ == "__main__":
-
+    profiler = hpy()
     max_sub_id = 0
     subs_ids = dict()
     subs = dict()
     authors = dict()
+    last_inspect = time.time()
 
 def treat_comment(comment):
-    global max_sub_id, subs_ids, subs, authors
+    global max_sub_id, subs_ids, subs, authors, last_inspect, profiler
     if comment["subreddit"] not in subs_ids.keys():
         subs_ids[comment["subreddit"]] = max_sub_id + 1
         max_sub_id += 1
@@ -21,6 +24,12 @@ def treat_comment(comment):
     if comment["author"] not in authors.keys(): authors[comment["author"]] = dict()
     if sub_id not in authors[comment["author"]].keys(): authors[comment["author"]][sub_id] = 0
     authors[comment["author"]][sub_id]+=1
+
+    if time.time() - last_inspect > 300:
+        print(profiler.heap())
+        print(profiler.iso(subs_ids, subs, authors), "\n\n\n\n")
+        input("Appuyez sur une touche pour continuer...")
+        last_inspect = time.time()
 
 if __name__ == "__main__":
     
