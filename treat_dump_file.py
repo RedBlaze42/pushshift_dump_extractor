@@ -1,4 +1,4 @@
-import json
+import json, time
 import zstandard as zstd
 from tqdm import tqdm
 import os, glob
@@ -9,6 +9,7 @@ def treat_files(comment_method, slug):
         treat_file(comment_method, file_path)
 
 def human_size(bytes, units=[' bytes','KB','MB','GB','TB', 'PB', 'EB']):
+    bytes = int(bytes)
     return str(bytes) + units[0] if bytes < 1024 else human_size(bytes>>10, units[1:])
 
 def human_b10(bytes, units=['','K','M','G','T', 'P', 'E']):
@@ -18,6 +19,7 @@ def treat_file(comment_method, file_name):
     last_update = 0
     chunk_nb = 0
     comment_count = 0
+    start = time.time()
     with open(file_name, 'rb') as fh:
         dctx = zstd.ZstdDecompressor(max_window_size = 2**31)
         with dctx.stream_reader(fh) as reader:
@@ -47,4 +49,5 @@ def treat_file(comment_method, file_name):
                         comment_count += 1
                         
                     previous_line = lines[-1]
-    print("Finished treating {}".format(human_size(chunk_nb*(2**24))))
+    size_treated, time_elapsed = chunk_nb*(2**24), int(time.time() - start)
+    print("Finished treating {} or {} comments, {}/s Lines: {}/s".format(human_size(size_treated), human_b10(comment_count), human_size(size_treated/time_elapsed), human_b10(comment_count/time_elapsed)))
