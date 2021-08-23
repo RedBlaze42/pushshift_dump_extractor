@@ -15,6 +15,8 @@ def treat_comment(comment):
         sub_id = max_sub_id + 1
         subs_ids[comment["subreddit"]] = sub_id
         max_sub_id += 1
+    else:
+        sub_id = subs_ids[comment["subreddit"]]
 
     if sub_id not in subs.keys(): subs[sub_id] = 1
     subs[sub_id] += 1
