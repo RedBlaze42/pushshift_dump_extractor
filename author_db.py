@@ -9,7 +9,7 @@ class AuthorDb:
         self.db.execute("PRAGMA synchronous = OFF")
         self.db.execute("PRAGMA journal_mode = OFF")
 
-        self.db.execute("CREATE TABLE IF NOT EXISTS author_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, author_name TEXT NOT NULL, subreddit INTEGER NOT NULL, posts INTEGER);")
+        self.db.execute("CREATE TABLE IF NOT EXISTS author_posts (author_name TEXT, subreddit INTEGER, posts INTEGER, UNIQUE(author_name, subreddit));")
 
     def close(self):
         self.db.commit()
