@@ -4,8 +4,10 @@ import json
 explicit_subs = list()
 
 def treat_explicit_sub(sub):
-    if sub['subreddit_type'] == "public" and sub["over18"]:
-        explicit_subs.append(sub["display_name"])
+    over_18_key = "over18" if "over18" in sub.keys() else "over_18"
+    display_name_key = "display_name" if "display_name" in sub.keys() else "subreddit"
+    if sub['subreddit_type'] == "public" and sub[over_18_key]:
+        explicit_subs.append(sub[display_name_key])
 
 
 if __name__ == '__main__':
